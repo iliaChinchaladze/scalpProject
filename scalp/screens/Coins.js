@@ -7,65 +7,40 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import backImg from './logos/backgroundImage.JPG';
 
-class Login extends Component {
+class Coins extends Component {
     constructor(props) {
       super(props);
       this.state = {
-        email: '',
-        password: '',
+        API_KEY: '',
+        API_SECRET: '',
       };
     }
   
     render() {
       return (
         <View style={styles.container}>
-          <Image
-            style={{ width: 150, height: 150, alignSelf: 'center', borderRadius:50, margin:10, }}
-            source={require('./logos/Scalp-logos.jpeg')}
+          <TextInput
+            style={styles.input}
+            placeholder="Api Key"
+            autoCompleteType="off"
+            onChangeText={(text) => { this.setState({ API_KEY: text }); }}
           />
           <TextInput
             style={styles.input}
-            placeholder="login"
-            onChangeText={(text) => { this.setState({ email: text }); }}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
+            placeholder="Api Secret"
             secureTextEntry
-            onChangeText={(text) => { this.setState({ password: text }); }}
+            autoCompleteType="off"
+            onChangeText={(text) => { this.setState({ API_SECRET: text }); }}
           />
           <View style={{felx:1, }}>  
             <TouchableOpacity style={styles.touchable} onPress={() => { this.login() }}>
-              <Text>Log in</Text>
+              <Text>Save Api</Text>
             </TouchableOpacity>
-            <View style={{flexDirection:'row', marginTop:20,}}>
-              <Text>Dont't have an account?</Text>
-              <TouchableOpacity onPress={() => this.props.navigation.navigate('Sign-up Page')}>
-                <Text style={styles.link}> Register</Text>
-              </TouchableOpacity>
-            </View>
           </View>
         </View>
       );
     }
-    // login function goes here
-    login = async () => {
-      let users = JSON.parse(await AsyncStorage.getItem("@users"));
-      var length = users.length;
-      var authorise = false;
-      for (let i =0; i<length; i++){
-        //console.log(users[i].email)
-        if (this.state.email == users[i].email && this.state.password == users[i].password){
-          authorise = true;
-        }
-      }
-      if (authorise == true){
-        this.props.navigation.navigate('Home');
-      }
-      else{
-        alert('Login or password incorrect ');
-      }
-    }
+    
 }
 
 const styles = StyleSheet.create({
@@ -74,6 +49,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingTop:60,
   },
   input: {
     width: 300,
@@ -110,4 +86,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+export default Coins;
