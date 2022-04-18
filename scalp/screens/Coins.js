@@ -42,48 +42,4 @@ class Coins extends Component {
     }
     
 }
-
-const styles = StyleSheet.create({
-  container: {
-    felx:1,
-    alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop:60,
-  },
-  input: {
-    width: 300,
-    height: 40,
-    backgroundColor: '#fff',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 15,
-    fontSize: 16,
-    alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 10,
-  },
-  touchable:{
-    padding:30,
-    backgroundColor:'#f9e608',
-    margin: 10,
-    textAlign:'center',
-    borderRadius:5,
-  },
-  button: {
-    margin: 10,
-    marginVertical: 20,
-  },
-  image: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  link:{
-    color:'blue'
-  },
-});
-
 export default Coins;
