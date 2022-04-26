@@ -5,8 +5,6 @@ import {
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import backImg from './logos/backgroundImage.JPG';
-
 class settings extends Component {
     constructor(props) {
       super(props);

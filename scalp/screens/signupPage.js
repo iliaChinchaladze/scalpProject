@@ -5,8 +5,6 @@ import {
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import backImg from './logos/backgroundImage.JPG';
-
 class Signup extends Component {
     constructor(props) {
       super(props);
@@ -119,7 +117,10 @@ class Signup extends Component {
         />
         <View style={{ justifyContent: 'center', alignSelf:'center', marginBottom: 20, width:150, }}>
             <TouchableOpacity style={styles.touchable} onPress={() => this.setData()}>
-              <Text>Sign up</Text>
+              <Text style={{fontWeight: "bold"}}>Sign up</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.touchable} onPress={() => this.props.navigation.goBack()}>
+              <Text style={{fontWeight: "bold"}}>Go Back</Text>
             </TouchableOpacity>
           </View>
       </View>
@@ -128,42 +129,43 @@ class Signup extends Component {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        margin: 30,
-        flex:1,
-        alignSelf: 'center',
-        lignItems: 'center',
-        justifyContent: 'center',
-      },
-      touchable:{
-          padding:25,
-          backgroundColor:'#f9e608',
-          margin: 10,
-          textAlign:'center',
-          borderRadius:5,
-          height:'10%',
-          width:'100%',
-      },
-      input: {
-        width: 300,
-        height: 40,
-        backgroundColor: '#fff',
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-        borderColor: '#ccc',
-        borderWidth: 1,
-        borderRadius: 15,
-        fontSize: 16,
-        alignSelf: 'center',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 10,
-      },
-      button: {
-        margin: 10,
-        marginVertical: 20,
-    
-      },
+  container: {
+    flex: 1,
+    alignSelf: 'center',
+    lignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgb(24, 26, 32)',
+    height: '100%',
+    width: '100%',
+  },
+  touchable: {
+    felx: 1,
+    padding: 30,
+    backgroundColor: '#f9e608',
+    margin: 10,
+    textAlign: 'center',
+    borderRadius: 5,
+  },
+  input: {
+    width: 300,
+    height: 40,
+    backgroundColor: '#fff',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 15,
+    fontSize: 16,
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
+  },
+  button: {
+    margin: 10,
+    marginVertical: 20,
+
+  },
 });
 
 export default Signup;

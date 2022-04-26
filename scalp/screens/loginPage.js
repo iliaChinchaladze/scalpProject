@@ -5,7 +5,6 @@ import {
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import backImg from './logos/backgroundImage.JPG';
 
 class Login extends Component {
     constructor(props) {
@@ -34,12 +33,12 @@ class Login extends Component {
             secureTextEntry
             onChangeText={(text) => { this.setState({ password: text }); }}
           />
-          <View style={{felx:1, }}>  
+          <View style={{felx:1, alignItems: 'center', justifyContent: 'center', }}>  
             <TouchableOpacity style={styles.touchable} onPress={() => { this.login() }}>
-              <Text>Log in</Text>
+              <Text style={{fontWeight: "bold"}}>Log in</Text>
             </TouchableOpacity>
             <View style={{flexDirection:'row', marginTop:20,}}>
-              <Text>Dont't have an account?</Text>
+              <Text style={{color:'#f9e608'}}>Dont't have an account?</Text>
               <TouchableOpacity onPress={() => this.props.navigation.navigate('Sign-up Page')}>
                 <Text style={styles.link}> Register</Text>
               </TouchableOpacity>
@@ -54,7 +53,6 @@ class Login extends Component {
       var length = users.length;
       var authorise = false;
       for (let i =0; i<length; i++){
-        //console.log(users[i].email)
         if (this.state.email == users[i].email && this.state.password == users[i].password){
           authorise = true;
         }
@@ -74,6 +72,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'rgb(24, 26, 32)',
+    height:'100%',
+    width:'100%',
   },
   input: {
     width: 300,
@@ -91,6 +92,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   touchable:{
+    felx:1,
     padding:30,
     backgroundColor:'#f9e608',
     margin: 10,
