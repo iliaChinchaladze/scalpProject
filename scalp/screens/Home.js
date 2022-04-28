@@ -1,6 +1,6 @@
 import React, { Component, useState } from 'react';
 import {
-  StyleSheet, Text, View, TouchableOpacity, FlatList, Image, Modal,
+  StyleSheet, Text, View, TouchableOpacity, FlatList, Image, Modal, map,
 } from 'react-native';
 
 require('dotenv').config();
@@ -31,6 +31,10 @@ class Home extends Component {
       amountToBid: '0',
       sellOrderAmount:'',
       buyOrderAmount:'',
+      limit:"",
+      indicatorValue:'',
+      finalIndicator:'',
+      indicatorUp: false,
     };
   }
   componentDidMount() {
@@ -83,6 +87,37 @@ class Home extends Component {
       </Modal>
       );
     } 
+    return
+  }
+  liquiditationFunction(){
+    if(this.state.liquidationVisible){
+      return(
+        <Modal
+        animationType="slide"
+        transparent={true}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Liquidate all positions or set custom stop-limit</Text>
+            <TouchableOpacity onPress={() => console.log('liquidate all')}>
+              <Text style={styles.modalText}>Liquidate all positions</Text>
+            </TouchableOpacity>
+            <Text style={styles.modalText}>Set custom limit below</Text>
+            <TextInput
+                style={styles.modalInput}
+                placeholder="$"
+                keyboardType='numeric'
+                maxLength={6}
+                onChangeText={(text) => { this.setState({ amountToBid: text }); }}
+                />
+            <TouchableOpacity onPress={() => this.setState({liquidationVisible:false})}>
+              <Text style={styles.modalText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      );
+    }
     return
   }
   confirmationSellFunction () {
@@ -168,13 +203,20 @@ class Home extends Component {
     return
   }
 
+
   render() {
     const testStyles = {
       popup: {
         color: this.state.priceUp ? "green" : "red",
         fontSize: 18,
         fontWeight: "bold"
-      }
+      },
+      indicator:{
+        backgroundColor: this.state.indicatorUp ? 'green' : 'red',
+        width:"50%",
+        borderRadius:5,
+        height:'80%',
+      },
     };
     const ItemDividerBuy = () => {
       return (
@@ -207,9 +249,10 @@ class Home extends Component {
               <Text style={{ fontWeight: "bold" }}>{this.state.firstCrypto}/{this.state.secondCrypto}</Text>
             </View>
           </TouchableOpacity>
+          
           <View style={{flex:1, flexDirection:'row', justifyContent:"flex-end",}}>
             <TouchableOpacity style={styles.touchable}
-              onPress={() => this.setState({modalVisible: true})}>
+              onPress={() => this.setState({liquidationVisible: true})}>
               <View style={{ felx: 1 }}>
                 <Text>💧</Text>
               </View>
@@ -221,6 +264,7 @@ class Home extends Component {
               </View>
             </TouchableOpacity>
           </View>
+          {this.liquiditationFunction()}
           {this.modalFunction()}
         </View>
 
@@ -253,8 +297,12 @@ class Home extends Component {
           />
         </View>
 
-        <Text style={testStyles.popup}>{this.state.currPrice}</Text>
-
+        <View style={{flex:1,flexDirection:'row',justifyContent:'space-between',width:'80%',height:'80%'}}>
+          <Text style={testStyles.popup}>{this.state.currPrice}</Text>
+          <View style={testStyles.indicator}>
+            <Text style={{textAlign:'center',fontSize:16,fontWeight: "bold",}}>{this.state.finalIndicator}</Text>
+          </View>
+        </View>
 
         <View style={{ height: '45%', width: 400 }}>
         {this.confirmationBuyFunction()}
@@ -314,25 +362,46 @@ class Home extends Component {
       console.log(prevPrice, this.state.currPrice);
     }
   }
+  compareIndicator = async() =>{
+    let indicator = parseFloat(await AsyncStorage.getItem("@prevIndicator"));
+    var indicatorDifferance =  parseFloat(this.state.indicatorValue-indicator);
+    var finalIndicator = (indicator+indicatorDifferance).toFixed(2);
+    this.setState({
+      finalIndicator: finalIndicator,
+    })
+  }
   displayBook = async () => {
     const binanceClient = new ccxt.binance({
-
     });
-    const prevPrice = await AsyncStorage.getItem("@prevCoin");
     setInterval(async () => {
       const coinOne = await AsyncStorage.getItem("@firstCoin");
-      const coinTwo = await AsyncStorage.getItem("@secondCoin");
-      const orders = await binanceClient.fetchOrderBook(coinOne + '/' + coinTwo);
+      const coinTwo = await AsyncStorage.getItem("@secondCoin");  
       const currPrice = await binanceClient.fetchTicker(coinOne + '/' + coinTwo);
-      this.comparePrices();
+      //get new indicator and compare to previous
+      const orders = await binanceClient.fetchOrderBook(coinOne + '/' + coinTwo);
+      let totalAsks =0;
+      let totalBids =0;
+      for(let obj of orders.asks){
+        totalAsks = totalAsks + (obj[1]*obj[0]);
+      }
+      for(let obj of orders.bids){
+        totalBids = totalBids + (obj[1]*obj[0]);
+      }
+      let total = totalBids-totalAsks;
+      //set new price and compare to privious
       this.setState({
         orderBookData: orders,
         currPrice: currPrice.ask.toFixed(2),
+        indicatorValue : total,
       })
-      await AsyncStorage.setItem("@prevCoin", currPrice.ask);
+      this.compareIndicator();
+      this.comparePrices();
+      //set previous coin for price comparison
+      await AsyncStorage.setItem("@prevCoin", currPrice.ask.toFixed(2));
+      //set previous total for indicator comparison
+      await AsyncStorage.setItem("@prevIndicator", total);
     }, 3000);
   }
-
 }
 
 const styles = StyleSheet.create({
@@ -344,6 +413,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     backgroundColor: 'rgb(24, 26, 32)',
     height: '100%',
+    justifyContent:'space-between',
   },
   touchableContainer: {
     felx: 1,
