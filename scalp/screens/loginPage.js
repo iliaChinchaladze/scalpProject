@@ -68,7 +68,7 @@ class Login extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    felx:1,
+    flex:1,
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   touchable:{
-    felx:1,
+    flex:1,
     padding:30,
     backgroundColor:'#f9e608',
     margin: 10,

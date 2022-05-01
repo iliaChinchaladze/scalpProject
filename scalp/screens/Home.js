@@ -3,7 +3,7 @@ import {
   StyleSheet, Text, View, TouchableOpacity, FlatList, Image, Modal, map,
 } from 'react-native';
 
-require('dotenv').config();
+
 
 const ccxt = require('ccxt');
 const axios = require('axios');
@@ -209,7 +209,7 @@ class Home extends Component {
       popup: {
         color: this.state.priceUp ? "green" : "red",
         fontSize: 18,
-        fontWeight: "bold"
+        fontWeight: "bold",
       },
       indicator:{
         backgroundColor: this.state.indicatorUp ? 'green' : 'red',
@@ -297,14 +297,14 @@ class Home extends Component {
           />
         </View>
 
-        <View style={{flex:1,flexDirection:'row',justifyContent:'space-between',width:'80%',height:'80%'}}>
+        <View style={{flex:1,flexDirection:'row',justifyContent:'space-between',width:'80%',height:'80%',alignItems:'center'}}>
           <Text style={testStyles.popup}>{this.state.currPrice}</Text>
           <View style={testStyles.indicator}>
             <Text style={{textAlign:'center',fontSize:16,fontWeight: "bold",}}>{this.state.finalIndicator}</Text>
           </View>
         </View>
 
-        <View style={{ height: '45%', width: 400 }}>
+        <View style={{ height: '45%', width: 400, }}>
         {this.confirmationBuyFunction()}
           <FlatList
             style={styles.cryptoFound}
@@ -369,10 +369,29 @@ class Home extends Component {
     this.setState({
       finalIndicator: finalIndicator,
     })
+    if (indicator == null) {
+      this.setState({
+        indicatorUp: true
+      })
+    }
+    else if (finalIndicator < 0) {
+      this.setState({
+        indicatorUp: false
+      })
+    }
+    else if (finalIndicator > 0) {
+      this.setState({
+        indicatorUp: true
+      })
+    }
   }
   displayBook = async () => {
     const binanceClient = new ccxt.binance({
+      //apiKey:'rXlac1IZ8KyegOHw8OvFBraaZQgaKPqYyw0lvBr5nI1RH42N809r2upYPseVaRa9',
+      //secret:'rd3TVSOnpy8Udopfv2fp2up6kYxB4Lp0XyrEUSZZ4HmnQhRlSoZQEdZ3qr9rIZFH'
     });
+    //const balance = await binanceClient.fetchBalance();
+    //console.log(balance);
     setInterval(async () => {
       const coinOne = await AsyncStorage.getItem("@firstCoin");
       const coinTwo = await AsyncStorage.getItem("@secondCoin");  
@@ -406,7 +425,7 @@ class Home extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    felx: 1,
+    flex: 1,
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
@@ -416,7 +435,7 @@ const styles = StyleSheet.create({
     justifyContent:'space-between',
   },
   touchableContainer: {
-    felx: 1,
+    flex: 1,
     width: '80%',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -453,7 +472,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   touchable: {
-    felx: 1,
+    flex: 1,
     padding: 10,
     backgroundColor: '#f9e608',
     textAlign: 'center',
