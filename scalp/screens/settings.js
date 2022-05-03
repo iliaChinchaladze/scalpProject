@@ -5,7 +5,7 @@ import {
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-class settings extends Component {
+class Settings extends Component {
     constructor(props) {
       super(props);
       this.state = {
@@ -30,7 +30,7 @@ class settings extends Component {
             autoCompleteType="off"
             onChangeText={(text) => { this.setState({ API_SECRET: text }); }}
           />
-          <View style={{felx:1, }}>  
+          <View style={{flex:1, }}>  
             <TouchableOpacity style={styles.touchable} onPress={() => { this.login() }}>
               <Text>Save Api</Text>
             </TouchableOpacity>
@@ -43,7 +43,7 @@ class settings extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    felx:1,
+    flex:1,
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
@@ -84,4 +84,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default settings;
+export default Settings;

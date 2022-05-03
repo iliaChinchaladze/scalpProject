@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  StyleSheet, Text, View, Button, TextInput, Image, TouchableOpacity, ImageBackground, 
+  StyleSheet, Text, View, Button, TextInput, Image, TouchableOpacity, ImageBackground, Alert, 
 } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -33,7 +33,7 @@ class Login extends Component {
             secureTextEntry
             onChangeText={(text) => { this.setState({ password: text }); }}
           />
-          <View style={{felx:1, alignItems: 'center', justifyContent: 'center', }}>  
+          <View style={{flex:1, alignItems: 'center', justifyContent: 'center', }}>  
             <TouchableOpacity style={styles.touchable} onPress={() => { this.login() }}>
               <Text style={{fontWeight: "bold"}}>Log in</Text>
             </TouchableOpacity>
@@ -52,16 +52,21 @@ class Login extends Component {
       let users = JSON.parse(await AsyncStorage.getItem("@users"));
       var length = users.length;
       var authorise = false;
-      for (let i =0; i<length; i++){
-        if (this.state.email == users[i].email && this.state.password == users[i].password){
-          authorise = true;
+      if(users == null) {
+        Alert.alert("Please register before login");
+      }
+      else if(users!==null) {
+        for (let i =0; i<length; i++){
+          if (this.state.email == users[i].email && this.state.password == users[i].password){
+            authorise = true;
+          }
         }
-      }
-      if (authorise == true){
-        this.props.navigation.navigate('Home');
-      }
-      else{
-        alert('Login or password incorrect ');
+        if (authorise == true){
+          this.props.navigation.navigate('Home');
+        }
+        else{
+          Alert.alert('Login or password incorrect ');
+        }
       }
     }
 }
@@ -92,7 +97,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   touchable:{
-    flex:1,
     padding:30,
     backgroundColor:'#f9e608',
     margin: 10,

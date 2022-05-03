@@ -28,19 +28,19 @@ class Signup extends Component {
       
       if (this.state.password !== this.state.password1) {
         //throw new Error('Passwords are not the same');
-        alert('Passwords are not the same');
+        Alert.alert('Passwords are not the same');
       } else if (this.state.first_name === '') {
         //throw new Error('Name can not be an empty space');
-        alert('Name can not be an empty space');
+        Alert.alert('Name can not be an empty space');
       } else if (this.state.last_name === '') {
         //throw new Error('Surname can not be an empty space');
-        alert('Surname can not be an empty space');
+        Alert.alert('Surname can not be an empty space');
       } else if (this.state.email.includes('@') === false) {
         //throw new Error('Invalid Mail');
-        alert('Invalid Mail');
+        Alert.alert('Invalid Mail');
       } else if (this.state.password.length < 6) {
         //throw new Error('Password needs to be greater then 6 characters');
-        alert('Password needs to be greater then 6 characters');
+        Alert.alert('Password needs to be greater then 6 characters');
       }
       else{
           this.state.userData.first_name = this.state.first_name;
@@ -139,7 +139,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   touchable: {
-    flex: 1,
     padding: 30,
     backgroundColor: '#f9e608',
     margin: 10,

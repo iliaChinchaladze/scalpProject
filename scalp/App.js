@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -7,9 +7,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Login from './screens/loginPage';
 import Signup from './screens/signupPage';
 import Home from './screens/Home';
-import Settings from './screens/settings';
+import Settings from './screens/Settings';
 import Coins from './screens/Coins';
-import TEST from './screens/test';
+import Wallet from './screens/Wallet';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -20,7 +20,7 @@ function HomeScreenNav() {
       <Tab.Screen name='coins' component={Coins} options={{ tabBarIcon: () => (<Text style={{ fontSize: 25 }}>🪙</Text>) }} />
       <Tab.Screen name="home" component={Home} options={{ tabBarIcon: () => (<Text style={{ fontSize: 25 }}>🏡</Text>) }} />
       <Tab.Screen name='settings' component={Settings} options={{ tabBarIcon: () => (<Text style={{ fontSize: 25 }}>⚙️</Text>) }} />
-      <Tab.Screen name = 'test' component={TEST} options={{ tabBarIcon: () => (<Text style={{ fontSize: 25 }}>TEST</Text>) }} />
+      <Tab.Screen name='wallet' component={Wallet} options={{ tabBarIcon: () => (<Text style={{ fontSize: 25 }}>👛</Text>)}}/>
     </Tab.Navigator>
   );
 }
@@ -32,6 +32,7 @@ class todo extends Component {
       // eslint-disable-next-line no-use-before-define
       <View style={styles.container}>
         <NavigationContainer>
+        <StatusBar hidden />
           <Stack.Navigator initialRouteName="loginPage">
             <Stack.Screen name="Login Page" component={Login}  options={{ headerShown: false }}/>
             <Stack.Screen name="Sign-up Page" component={Signup}   options={{ headerShown: false }}/>

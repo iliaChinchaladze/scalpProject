@@ -1,15 +1,13 @@
 import React, { Component, useState } from 'react';
 import {
-  StyleSheet, Text, View, TouchableOpacity, FlatList, Image, Modal, map,
+  StyleSheet, Text, View, TouchableOpacity, FlatList, Image, Modal, map, TextInput
 } from 'react-native';
 
 
-
-const ccxt = require('ccxt');
-const axios = require('axios');
+import Binance from 'binance-api-react-native'
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { TextInput } from 'react-native-gesture-handler';
+
 
 
 
@@ -95,7 +93,7 @@ class Home extends Component {
         <Modal
         animationType="slide"
         transparent={true}
-      >
+        >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>Liquidate all positions or set custom stop-limit</Text>
@@ -161,6 +159,23 @@ class Home extends Component {
     } 
     return
   }
+  makeBuyOrder= async () =>{
+    console.log('makeAnOrder');
+    const coinOne = await AsyncStorage.getItem("@firstCoin");
+    const coinTwo = await AsyncStorage.getItem("@secondCoin");
+    const quantity = parseFloat(this.state.amountToBid/this.state.currPrice);
+
+    const binanceClient = Binance({
+      apiKey: 'rXlac1IZ8KyegOHw8OvFBraaZQgaKPqYyw0lvBr5nI1RH42N809r2upYPseVaRa9',
+      apiSecret:'rd3TVSOnpy8Udopfv2fp2up6kYxB4Lp0XyrEUSZZ4HmnQhRlSoZQEdZ3qr9rIZFH',
+    })
+    console.log(await binanceClient.order({
+      symbol: coinOne+coinTwo,
+      side: 'BUY',
+      quantity: quantity,
+      price: this.state.buyOrderAmount,
+    }));
+  }
   confirmationBuyFunction () {
     if(this.state.confiramtionBuyVisible){
       if(this.state.amountToBid!=0){
@@ -174,6 +189,9 @@ class Home extends Component {
               <Text style={styles.modalText}>Buy Order will be placed at value: ${this.state.buyOrderAmount}</Text>
               <Text  style={styles.modalText}>with an amount of ${this.state.amountToBid}</Text>
               <Text style={styles.modalText}>Please press ok to confirm</Text>
+              <TouchableOpacity onPress={() => this.makeBuyOrder()}>
+                <Text style={styles.modalText}>OK</Text>
+              </TouchableOpacity>
               <TouchableOpacity onPress={() => this.setState({confiramtionBuyVisible:false})}>
                 <Text style={styles.modalText}>Close</Text>
               </TouchableOpacity>
@@ -209,6 +227,7 @@ class Home extends Component {
       popup: {
         color: this.state.priceUp ? "green" : "red",
         fontSize: 18,
+        flex:1,
         fontWeight: "bold",
       },
       indicator:{
@@ -216,6 +235,7 @@ class Home extends Component {
         width:"50%",
         borderRadius:5,
         height:'80%',
+        flex:1,
       },
     };
     const ItemDividerBuy = () => {
@@ -245,21 +265,21 @@ class Home extends Component {
         <View style={styles.touchableContainer}>
           <TouchableOpacity style={styles.touchable}
             onPress={() => this.props.navigation.navigate('coins')}>
-            <View style={{ felx: 1 }}>
-              <Text style={{ fontWeight: "bold" }}>{this.state.firstCrypto}/{this.state.secondCrypto}</Text>
+            <View style={{ flex: 1,  }}>
+              <Text style={{ fontWeight: "bold",justifyContent: 'center', alignSelf: 'center'}}>{this.state.firstCrypto}/{this.state.secondCrypto}</Text>
             </View>
           </TouchableOpacity>
           
-          <View style={{flex:1, flexDirection:'row', justifyContent:"flex-end",}}>
+          <View style={{flex:1, flexDirection:'row', justifyContent:"flex-end"}}>
             <TouchableOpacity style={styles.touchable}
               onPress={() => this.setState({liquidationVisible: true})}>
-              <View style={{ felx: 1 }}>
-                <Text>💧</Text>
+              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', }}>
+                <Image style={{ width: 25, height: 20 }} source={require('../assets/dropletIcon.png')} />
               </View>
             </TouchableOpacity>
             <TouchableOpacity style={styles.touchable}
               onPress={() => this.setState({modalVisible: true})}>
-              <View style={{ felx: 1 }}>
+              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', }}>
                 <Image style={{ width: 25, height: 20 }} source={require('../assets/moneyIcon.png')} />
               </View>
             </TouchableOpacity>
@@ -277,30 +297,36 @@ class Home extends Component {
               <TouchableOpacity
                 onPress={async () => {
                   //await AsyncStorage.setItem('@firstCoin', item.cryptoId);
-                  this.setState({sellOrderAmount: item[0].toFixed(2), confiramtionSellVisible: true})
+                  this.setState({sellOrderAmount: parseFloat(item.price).toFixed(2), confiramtionSellVisible: true})
                 }}
                 style={styles.eachCrypto}
               >
                 <Text style={styles.textStyleSell}>
-                  {item[0].toFixed(2)}
+                  {parseFloat(item.price).toFixed(2)}
                 </Text>
                 <Text style={styles.textStyleSell}>
-                  {item[1]}
+                  {parseFloat(item.quantity).toFixed(5)}
                 </Text>
                 <Text style={styles.textStyleSell}>
-                  {(item[1] * item[0]).toFixed(1)}
+                  {(item.price * item.quantity).toFixed(1)}
                 </Text>
               </TouchableOpacity>
             )}
-            keyExtractor={(item, index) => item.toString()}
+            keyExtractor={(item, index) => (item.quantity*item.price).toString()}
             ItemSeparatorComponent={ItemDividerSell}
           />
         </View>
 
-        <View style={{flex:1,flexDirection:'row',justifyContent:'space-between',width:'80%',height:'80%',alignItems:'center'}}>
+        <View style={{flex:1,flexDirection:'row',justifyContent:'space-between',width:'80%',height:'80%',alignItems:'center',alignSelf:'center'}}>
           <Text style={testStyles.popup}>{this.state.currPrice}</Text>
           <View style={testStyles.indicator}>
-            <Text style={{textAlign:'center',fontSize:16,fontWeight: "bold",}}>{this.state.finalIndicator}</Text>
+            <Text style={{textAlign:'center',
+                          fontSize:16,
+                          fontWeight: "bold",
+                          alignSelf: 'center',
+                          justifyContent: 'center'}}>
+                {this.state.finalIndicator}
+              </Text>
           </View>
         </View>
 
@@ -313,22 +339,22 @@ class Home extends Component {
               <TouchableOpacity
                 onPress={async () => {
                   //await AsyncStorage.setItem('@firstCoin', item.cryptoId);
-                  this.setState({buyOrderAmount: item[0].toFixed(2), confiramtionBuyVisible: true})
+                  this.setState({buyOrderAmount: parseFloat(item.price).toFixed(2), confiramtionBuyVisible: true})
                 }}
                 style={styles.eachCrypto}
               >
                 <Text style={styles.textStyleBuy}>
-                  {item[0].toFixed(2)}
+                  {parseFloat(item.price).toFixed(2)}
                 </Text>
                 <Text style={styles.textStyleBuy}>
-                  {item[1].toFixed(5)}
+                  {parseFloat(item.quantity).toFixed(5)}
                 </Text>
                 <Text style={styles.textStyleBuy}>
-                  {(item[1] * item[0]).toFixed(1)}
+                  {(item.quantity * item.price).toFixed(1)}
                 </Text>
               </TouchableOpacity>
             )}
-            keyExtractor={(item, index) => item.toString()}
+            keyExtractor={(item, index) => (item.quantity*item.price).toString()}
             ItemSeparatorComponent={ItemDividerBuy}
           />
         </View>
@@ -365,7 +391,7 @@ class Home extends Component {
   compareIndicator = async() =>{
     let indicator = parseFloat(await AsyncStorage.getItem("@prevIndicator"));
     var indicatorDifferance =  parseFloat(this.state.indicatorValue-indicator);
-    var finalIndicator = (indicator+indicatorDifferance).toFixed(2);
+    var finalIndicator = parseFloat(indicator+indicatorDifferance).toFixed(2);
     this.setState({
       finalIndicator: finalIndicator,
     })
@@ -386,40 +412,64 @@ class Home extends Component {
     }
   }
   displayBook = async () => {
-    const binanceClient = new ccxt.binance({
+    //const binanceClient = Binance();
+    const binanceClient = Binance({
+      apiKey: 'rXlac1IZ8KyegOHw8OvFBraaZQgaKPqYyw0lvBr5nI1RH42N809r2upYPseVaRa9',
+      apiSecret:'rd3TVSOnpy8Udopfv2fp2up6kYxB4Lp0XyrEUSZZ4HmnQhRlSoZQEdZ3qr9rIZFH',
+    })
+    const accountInfo = await binanceClient.accountInfo();
+    for(let obj of accountInfo.balances) {
+      if(obj.free>0){
+        //console.log(obj);
+      }
+    }
+    //console.log(await binanceClient.myTrades({
+      //symbol: 'ETHUSDT',
+    //}))
+    //const binanceClient = new ccxt.binance({
       //apiKey:'rXlac1IZ8KyegOHw8OvFBraaZQgaKPqYyw0lvBr5nI1RH42N809r2upYPseVaRa9',
       //secret:'rd3TVSOnpy8Udopfv2fp2up6kYxB4Lp0XyrEUSZZ4HmnQhRlSoZQEdZ3qr9rIZFH'
-    });
+    //});
     //const balance = await binanceClient.fetchBalance();
     //console.log(balance);
     setInterval(async () => {
       const coinOne = await AsyncStorage.getItem("@firstCoin");
       const coinTwo = await AsyncStorage.getItem("@secondCoin");  
-      const currPrice = await binanceClient.fetchTicker(coinOne + '/' + coinTwo);
+      //const currPrice = await binanceClient.fetchTicker(coinOne + '/' + coinTwo);
+      
+      //new librabty testing
+      const info =(await binanceClient.prices());
+      const symbolz = coinOne+coinTwo;
+      const currPrice = info[symbolz];
+      const orders = await binanceClient.book({ symbol: coinOne+coinTwo });
+      //console.log(orders.asks);
+
       //get new indicator and compare to previous
-      const orders = await binanceClient.fetchOrderBook(coinOne + '/' + coinTwo);
+      //const orders = await binanceClient.fetchOrderBook(coinOne + '/' + coinTwo);
       let totalAsks =0;
       let totalBids =0;
+      
       for(let obj of orders.asks){
-        totalAsks = totalAsks + (obj[1]*obj[0]);
+        //totalAsks = totalAsks + (obj[1]*obj[0]);
+        totalAsks = totalAsks + (obj.price*obj.quantity);
       }
       for(let obj of orders.bids){
-        totalBids = totalBids + (obj[1]*obj[0]);
+        totalBids = totalBids + (obj.price*obj.quantity);
       }
-      let total = totalBids-totalAsks;
+      const total = parseFloat(totalBids-totalAsks);
       //set new price and compare to privious
       this.setState({
         orderBookData: orders,
-        currPrice: currPrice.ask.toFixed(2),
+        currPrice: parseFloat(currPrice).toFixed(2),
         indicatorValue : total,
       })
       this.compareIndicator();
       this.comparePrices();
       //set previous coin for price comparison
-      await AsyncStorage.setItem("@prevCoin", currPrice.ask.toFixed(2));
+      await AsyncStorage.setItem("@prevCoin", parseFloat(currPrice).toFixed(2));
       //set previous total for indicator comparison
-      await AsyncStorage.setItem("@prevIndicator", total);
-    }, 3000);
+      await AsyncStorage.setItem("@prevIndicator", JSON.stringify(total));
+    }, 15000);
   }
 }
 
@@ -435,8 +485,8 @@ const styles = StyleSheet.create({
     justifyContent:'space-between',
   },
   touchableContainer: {
-    flex: 1,
     width: '80%',
+    height: '6.8%',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -488,7 +538,7 @@ const styles = StyleSheet.create({
     margin: 20,
     backgroundColor: "rgb(32, 33, 36)",
     borderRadius: 20,
-    borderColor: 'f9e608',
+    borderColor: '#f9e608',
     padding: 35,
     alignItems: "center",
     shadowColor: "#000",

@@ -42,8 +42,7 @@ class Coins extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <h1 style={{
-                    fontFamily: 'italic',
+                <Text style={{
                     fontSize: 22,
                     textAlign: 'center',
                     alignSelf: 'center',
@@ -51,7 +50,7 @@ class Coins extends Component {
                 }}
                 >
                     Choose First Coin
-                </h1>
+                </Text>
                 <View style={{height:200}}>
                 <FlatList
                     style={styles.cryptoFound}
@@ -72,8 +71,7 @@ class Coins extends Component {
                     keyExtractor={(item, index) => item.cryptoId.toString()}
                 />
                 </View>
-                <h1 style={{
-                    fontFamily: 'italic',
+                <Text style={{
                     fontSize: 22,
                     textAlign: 'center',
                     alignSelf: 'center',
@@ -81,7 +79,7 @@ class Coins extends Component {
                 }}
                 >
                     Choose Second Coin
-                </h1>
+                </Text>
                 <View style={{height:150}}>
                 <FlatList
                     style={styles.cryptoFound}
@@ -102,12 +100,10 @@ class Coins extends Component {
                     keyExtractor={(item, index) => item.cryptoId.toString()}
                 />
                 </View>
-                <View style={styles.touchableContainer}>
+                <View style={{flex:1, alignItems: 'center', justifyContent: 'center',}}>
                     <TouchableOpacity style={styles.touchable}
                         onPress={() => this.props.navigation.navigate('home')}>
-                            <View style ={{felx:1}}>
-                                <Text style={{fontWeight: "bold"}}>{this.state.firstCrypto}/{this.state.secondCrypto}</Text>
-                            </View>
+                            <Text style={{fontWeight: "bold",justifyContent: 'center', alignSelf: 'center'}}>{this.state.firstCrypto}/{this.state.secondCrypto}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -118,13 +114,13 @@ class Coins extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        felx: 1,
+        flex: 1,
         paddingTop: 30,
         backgroundColor: 'rgb(24, 26, 32)',
         height:"100%",
     },
     touchableContainer:{
-        felx:1,
+        flex:1,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -146,7 +142,6 @@ const styles = StyleSheet.create({
         fontSize: 24,
     },
     touchable:{
-        felx:1,
         padding:10,
         backgroundColor:'#f9e608',
         textAlign:'center',
