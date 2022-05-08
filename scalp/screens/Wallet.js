@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import {
-    StyleSheet, Text, View, Button, TextInput, Image, TouchableOpacity, FlatList
+    StyleSheet, Text, View, Button, TextInput, Image, TouchableOpacity, FlatList, Alert
 } from 'react-native';
-import Binance from 'binance-api-react-native'
+import Binance from 'binance-api-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
@@ -11,7 +11,7 @@ class Wallet extends Component {
         super(props);
         this.state = {
             balanceInfo: [],
-            balance:'',
+            balance:0,
         };
     }
     componentDidMount() {
@@ -37,14 +37,14 @@ class Wallet extends Component {
         return (
             <View style={styles.container}>
                 < View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', }}>
+                    <Text style={{fontSize: 30, color: 'white', marginTop: 35}}>Balance Total ${this.state.balance}</Text>
                     <FlatList
                         style={styles.cryptoFound}
                         data={this.state.balanceInfo}
                         renderItem={({ item }) => (
                             <TouchableOpacity
                                 onPress={async () => {
-                                    //await AsyncStorage.setItem('@firstCoin', item.cryptoId);
-                                    //this.setState({ buyOrderAmount: parseFloat(item.price).toFixed(2), confiramtionBuyVisible: true })
+                                    this.showOpenOrders(item.asset)
                                 }}
                                 style={styles.eachCrypto}
                             >
@@ -63,31 +63,48 @@ class Wallet extends Component {
             </View>
         );
     }
+    showOpenOrders =async(item)=>{
+        const binanceClient = Binance({
+            apiKey: await AsyncStorage.getItem("@api-key"),
+            apiSecret:await AsyncStorage.getItem("@api-secret"),
+          })
+          const firstCoin = await AsyncStorage.setItem("@coinOrders", item);
+          const secondCoin = await AsyncStorage.getItem("@secondCoin");
+          const order = await binanceClient.openOrders({symbol: item+secondCoin});
+          if(order.length===0) {
+              Alert.alert('No open orders found for this symbol');
+          }
+          else{
+            this.props.navigation.navigate("OpenOrders");
+          }
+    }
     calculateBalance = async () => {
         const binanceClient = Binance();
         const info =(await binanceClient.prices());
+        var finalBalance = 0;
         for (let obj of this.state.balanceInfo) {
-            if(obj.asset != "USDT"){
+            if(obj.asset != "USDT" && obj.asset!='SOLO'){
                 const symbolz = obj.asset+"USDT";
                 const currPrice = info[symbolz];
                 const amountInDollars = currPrice*obj.free;
-                this.setState({
-                    balance : balnace + amountInDollars,
-                })
+                finalBalance += parseFloat(amountInDollars);
+            }
+            else if(obj.asset == 'SOLO'){
+
             }
             else{
-                this.setState({
-                    balance : balnace + obj.free,
-                })
+                finalBalance += parseFloat(obj.free);
             }
         }
-        console.log(this.state.balance);
+        this.setState({
+            balance: finalBalance.toFixed(2),
+        })
     }
 
     displayBalance = async () => {
         const binanceClient = Binance({
-            apiKey: 'rXlac1IZ8KyegOHw8OvFBraaZQgaKPqYyw0lvBr5nI1RH42N809r2upYPseVaRa9',
-            apiSecret: 'rd3TVSOnpy8Udopfv2fp2up6kYxB4Lp0XyrEUSZZ4HmnQhRlSoZQEdZ3qr9rIZFH',
+            apiKey: await AsyncStorage.getItem("@api-key"),
+            apiSecret: await AsyncStorage.getItem("@api-secret"),
         })
         const accountInfo = await binanceClient.accountInfo();
         const toSend = [];

@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Binance from 'binance-api-react-native';
 
 
 class Coins extends Component {
@@ -21,7 +22,7 @@ class Coins extends Component {
             this.getCurrencies();
         });
     }
-
+   
     getCurrencies = async () => {
         this.setState({
             cryptoCurrencies: [

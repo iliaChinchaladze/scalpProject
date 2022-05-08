@@ -10,6 +10,7 @@ import Home from './screens/Home';
 import Settings from './screens/Settings';
 import Coins from './screens/Coins';
 import Wallet from './screens/Wallet';
+import OpenOrders from './screens/OpenOrders';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -19,7 +20,7 @@ function HomeScreenNav() {
     <Tab.Navigator screenOptions={{ headerShown: false, tabBarStyle: {} }}>
       <Tab.Screen name='coins' component={Coins} options={{ tabBarIcon: () => (<Text style={{ fontSize: 25 }}>🪙</Text>) }} />
       <Tab.Screen name="home" component={Home} options={{ tabBarIcon: () => (<Text style={{ fontSize: 25 }}>🏡</Text>) }} />
-      <Tab.Screen name='settings' component={Settings} options={{ tabBarIcon: () => (<Text style={{ fontSize: 25 }}>⚙️</Text>) }} />
+      {/* <Tab.Screen name='settings' component={Settings} options={{ tabBarIcon: () => (<Text style={{ fontSize: 25 }}>⚙️</Text>) }} /> */}
       <Tab.Screen name='wallet' component={Wallet} options={{ tabBarIcon: () => (<Text style={{ fontSize: 25 }}>👛</Text>)}}/>
     </Tab.Navigator>
   );
@@ -37,6 +38,8 @@ class todo extends Component {
             <Stack.Screen name="Login Page" component={Login}  options={{ headerShown: false }}/>
             <Stack.Screen name="Sign-up Page" component={Signup}   options={{ headerShown: false }}/>
             <Stack.Screen name="Home" component={HomeScreenNav} options={{ headerShown: false }} />
+            <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }}/>
+            <Stack.Screen name="OpenOrders" component={OpenOrders} options={{ headerShown: false }}/>
           </Stack.Navigator>
         </NavigationContainer>
       </View>

@@ -50,8 +50,11 @@ class Login extends Component {
     // login function goes here
     login = async () => {
       let users = JSON.parse(await AsyncStorage.getItem("@users"));
-      var length = users.length;
+      if(users != null) {
+        var length = users.length;
+      }
       var authorise = false;
+      var firstTime = null;
       if(users == null) {
         Alert.alert("Please register before login");
       }
@@ -59,10 +62,18 @@ class Login extends Component {
         for (let i =0; i<length; i++){
           if (this.state.email == users[i].email && this.state.password == users[i].password){
             authorise = true;
+            firstTime = users[i].firstLog
+            users[i].firstLog = false;
           }
         }
         if (authorise == true){
-          this.props.navigation.navigate('Home');
+          await AsyncStorage.setItem("@users", JSON.stringify(users));
+          if(firstTime == true) {
+            this.props.navigation.navigate("Settings");
+          }
+          else{ 
+            this.props.navigation.navigate('Home');
+          }
         }
         else{
           Alert.alert('Login or password incorrect ');

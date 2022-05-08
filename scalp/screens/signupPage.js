@@ -20,6 +20,7 @@ class Signup extends Component {
             last_name: '',
             email: '',
             password: '',
+            firstLog: true,
           },
       };
     }
@@ -55,7 +56,8 @@ class Signup extends Component {
               first_name:this.state.first_name,
               last_name:this.state.last_name,
               email:this.state.email,
-              password:this.state.password
+              password:this.state.password,
+              firstLog : true,
             }];
             await AsyncStorage.setItem("@users", JSON.stringify(tosend));
           }
@@ -66,7 +68,8 @@ class Signup extends Component {
               first_name:this.state.first_name,
               last_name:this.state.last_name,
               email:this.state.email,
-              password:this.state.password
+              password:this.state.password,
+              firstLog : true,
             };
             users.push(tosend);
             await AsyncStorage.setItem("@users", [JSON.stringify(users)]);

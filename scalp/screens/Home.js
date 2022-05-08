@@ -57,11 +57,11 @@ class Home extends Component {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>Choose amount to bid</Text>
-            <TouchableOpacity onPress={() => this.setState({amountToBid:'5'})}>
-              <Text style={styles.modalText}>$5</Text>
+            <TouchableOpacity onPress={() => this.setState({amountToBid:'20'})}>
+              <Text style={styles.modalText}>$20</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => this.setState({amountToBid:'10'})}>
-              <Text style={styles.modalText}>$10</Text>
+            <TouchableOpacity onPress={() => this.setState({amountToBid:'30'})}>
+              <Text style={styles.modalText}>$30</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => this.setState({amountToBid:'50'})}>
               <Text style={styles.modalText}>$50</Text>
@@ -131,6 +131,9 @@ class Home extends Component {
               <Text style={styles.modalText}>Sell Order will be placed at value: ${this.state.sellOrderAmount}</Text>
               <Text  style={styles.modalText}>with an amount of ${this.state.amountToBid}</Text>
               <Text style={styles.modalText}>Please press ok to confirm</Text>
+              <TouchableOpacity onPress={() => this.makeSellOrder()}>
+                <Text style={styles.modalText}>OK</Text>
+              </TouchableOpacity>
               <TouchableOpacity onPress={() => this.setState({confiramtionSellVisible:false})}>
                 <Text style={styles.modalText}>Close</Text>
               </TouchableOpacity>
@@ -159,21 +162,40 @@ class Home extends Component {
     } 
     return
   }
+  makeSellOrder= async () =>{
+    console.log('makeASellOrder');
+    const coinOne = await AsyncStorage.getItem("@firstCoin");
+    const coinTwo = await AsyncStorage.getItem("@secondCoin");
+    const quantity = Math.round(parseFloat(this.state.amountToBid/this.state.currPrice));
+    console.log(quantity);
+    const binanceClient = Binance({
+      apiKey: await AsyncStorage.getItem("@api-key"),
+      apiSecret: await AsyncStorage.getItem("@api-secret"),
+    })
+    console.log(await binanceClient.order({
+      symbol: coinOne+coinTwo,
+      side: 'SELL',
+      type: 'LIMIT',
+      quantity: quantity,
+      price: this.state.currPrice,
+    }));
+  }
   makeBuyOrder= async () =>{
     console.log('makeAnOrder');
     const coinOne = await AsyncStorage.getItem("@firstCoin");
     const coinTwo = await AsyncStorage.getItem("@secondCoin");
-    const quantity = parseFloat(this.state.amountToBid/this.state.currPrice);
+    const quantity = Math.round(parseFloat(this.state.amountToBid/this.state.currPrice));
 
     const binanceClient = Binance({
-      apiKey: 'rXlac1IZ8KyegOHw8OvFBraaZQgaKPqYyw0lvBr5nI1RH42N809r2upYPseVaRa9',
-      apiSecret:'rd3TVSOnpy8Udopfv2fp2up6kYxB4Lp0XyrEUSZZ4HmnQhRlSoZQEdZ3qr9rIZFH',
+      apiKey: await AsyncStorage.getItem("@api-key"),
+      apiSecret: await AsyncStorage.getItem("@api-secret"),
     })
     console.log(await binanceClient.order({
       symbol: coinOne+coinTwo,
       side: 'BUY',
+      type: 'LIMIT',
       quantity: quantity,
-      price: this.state.buyOrderAmount,
+      price: this.state.currPrice,
     }));
   }
   confirmationBuyFunction () {
@@ -414,15 +436,9 @@ class Home extends Component {
   displayBook = async () => {
     //const binanceClient = Binance();
     const binanceClient = Binance({
-      apiKey: 'rXlac1IZ8KyegOHw8OvFBraaZQgaKPqYyw0lvBr5nI1RH42N809r2upYPseVaRa9',
-      apiSecret:'rd3TVSOnpy8Udopfv2fp2up6kYxB4Lp0XyrEUSZZ4HmnQhRlSoZQEdZ3qr9rIZFH',
+      apiKey: await AsyncStorage.getItem("@api-key"),
+      apiSecret:await AsyncStorage.getItem("@api-secret"),
     })
-    const accountInfo = await binanceClient.accountInfo();
-    for(let obj of accountInfo.balances) {
-      if(obj.free>0){
-        //console.log(obj);
-      }
-    }
     //console.log(await binanceClient.myTrades({
       //symbol: 'ETHUSDT',
     //}))
@@ -441,7 +457,7 @@ class Home extends Component {
       const info =(await binanceClient.prices());
       const symbolz = coinOne+coinTwo;
       const currPrice = info[symbolz];
-      const orders = await binanceClient.book({ symbol: coinOne+coinTwo });
+      const orders = await binanceClient.book({ symbol: coinOne+coinTwo, limit: 15 });
       //console.log(orders.asks);
 
       //get new indicator and compare to previous
