@@ -39,7 +39,7 @@ class Signup extends Component {
       } else if (this.state.email.includes('@') === false) {
         //throw new Error('Invalid Mail');
         Alert.alert('Invalid Mail');
-      } else if (this.state.password.length < 6) {
+      } else if (this.state.password.length >= 6) {
         //throw new Error('Password needs to be greater then 6 characters');
         Alert.alert('Password needs to be greater then 6 characters');
       }

@@ -30,6 +30,7 @@
     "expo": "~44.0.0",
     "expo-status-bar": "~1.2.0",
     "https-browserify": "^0.0.1",
+    "intl": "^1.2.5",
     "path-browserify": "^0.0.0",
     "process": "^0.11.0",
     "punycode": "^1.2.4",

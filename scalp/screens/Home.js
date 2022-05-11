@@ -30,8 +30,8 @@ class Home extends Component {
       sellOrderAmount:'',
       buyOrderAmount:'',
       limit:"",
-      indicatorValue:'',
-      finalIndicator:'',
+      indicatorValue:0,
+      finalIndicator:0,
       indicatorUp: false,
     };
   }
@@ -411,23 +411,23 @@ class Home extends Component {
     }
   }
   compareIndicator = async() =>{
-    let indicator = parseFloat(await AsyncStorage.getItem("@prevIndicator"));
-    var indicatorDifferance =  parseFloat(this.state.indicatorValue-indicator);
-    var finalIndicator = parseFloat(indicator+indicatorDifferance).toFixed(2);
+    console.log(this.state.finalIndicator,'--',this.state.indicatorValue);
+    var finalValue = parseFloat(this.state.finalIndicator) + parseFloat(this.state.indicatorValue);
+    console.log(finalValue);
     this.setState({
-      finalIndicator: finalIndicator,
+      finalIndicator: (finalValue).toFixed(2),
     })
-    if (indicator == null) {
+    if (finalValue == null) {
       this.setState({
         indicatorUp: true
       })
     }
-    else if (finalIndicator < 0) {
+    else if (finalValue < 0) {
       this.setState({
         indicatorUp: false
       })
     }
-    else if (finalIndicator > 0) {
+    else if (finalValue > 0) {
       this.setState({
         indicatorUp: true
       })
@@ -460,32 +460,29 @@ class Home extends Component {
       const orders = await binanceClient.book({ symbol: coinOne+coinTwo, limit: 15 });
       //console.log(orders.asks);
 
-      //get new indicator and compare to previous
-      //const orders = await binanceClient.fetchOrderBook(coinOne + '/' + coinTwo);
+      //creating variables to calculate total bids and asks
       let totalAsks =0;
       let totalBids =0;
-      
+      //go through asks and calculate voulme of sellers
       for(let obj of orders.asks){
-        //totalAsks = totalAsks + (obj[1]*obj[0]);
         totalAsks = totalAsks + (obj.price*obj.quantity);
       }
+      //go through asks and calculate voulme of buyers
       for(let obj of orders.bids){
         totalBids = totalBids + (obj.price*obj.quantity);
       }
       const total = parseFloat(totalBids-totalAsks);
-      //set new price and compare to privious
+      //set order book data, current price and indicator that will be added to total.
       this.setState({
         orderBookData: orders,
         currPrice: parseFloat(currPrice).toFixed(2),
-        indicatorValue : total,
+        indicatorValue : total.toFixed(2),
       })
       this.compareIndicator();
       this.comparePrices();
       //set previous coin for price comparison
       await AsyncStorage.setItem("@prevCoin", parseFloat(currPrice).toFixed(2));
-      //set previous total for indicator comparison
-      await AsyncStorage.setItem("@prevIndicator", JSON.stringify(total));
-    }, 15000);
+    }, 5000);
   }
 }
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-    StyleSheet, Text, View, Button, TextInput, Image, TouchableOpacity, FlatList,
+    StyleSheet, Text, View, Modal, TextInput, Image, TouchableOpacity, FlatList,
 } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -11,12 +11,49 @@ class OpenOrders extends Component {
         super(props);
         this.state = {
             orders: null,
+            confirmationCancel: false,
         };
     }
     componentDidMount() {
         this.unsubscribe = this.props.navigation.addListener('focus', () => {
             this.showOpenOrders();
         });
+    }
+    cancelOrder = async () => {
+        let cancelId = await AsyncStorage.getItem("@cancelId");
+        let cancelSymbol = await AsyncStorage.getItem("@cancelSymbol");
+        const binanceClient = Binance({
+            apiKey: await AsyncStorage.getItem("@api-key"),
+            apiSecret: await AsyncStorage.getItem("@api-secret"),
+        })
+        console.log(await binanceClient.cancelOrder({
+            symbol: cancelSymbol,
+            orderId: cancelId
+        }));
+        this.props.navigation.navigate('Home');
+    }
+    modalFunction() {
+        if (this.state.confirmationCancel) {
+            return (
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                >
+                    <View style={styles.centeredView}>
+                        <View style={styles.modalView}>
+                            <Text style={styles.modalText}>Cancel order by pressing button below{this.state.amountToBid}</Text>
+                            <TouchableOpacity onPress={() => this.cancelOrder()}>
+                                <Text style={styles.modalText}>Cancel Order</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => this.setState({ confirmationCancel: false })}>
+                                <Text style={styles.modalText}>Close</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </Modal>
+            );
+        }
+        return
     }
 
     render() {
@@ -33,14 +70,22 @@ class OpenOrders extends Component {
         }
         return (
             <View style={styles.container}>
+                <View style={{ width: '80%', flexDirection: 'row', justifyContent: 'space-evenly' }}>
+                    <Text style={styles.flatListText}>Symbol</Text>
+                    <Text style={styles.flatListText}>Type</Text>
+                    <Text style={styles.flatListText}>Order Id</Text>
+                </View>
                 < View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', }}>
+                    {this.modalFunction()}
                     <FlatList
                         style={styles.cryptoFound}
                         data={this.state.orders}
                         renderItem={({ item }) => (
                             <TouchableOpacity
                                 onPress={async () => {
-
+                                    await AsyncStorage.setItem('@cancelSymbol', item.symbol),
+                                    await AsyncStorage.setItem('@cancelId', JSON.stringify(item.orderId)),
+                                    this.setState({confirmationCancel: true})
                                 }}
                                 style={styles.eachCrypto}
                             >
@@ -51,7 +96,7 @@ class OpenOrders extends Component {
                                     {item.side}
                                 </Text>
                                 <Text style={styles.flatListText}>
-                                    {new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' }).format(item.time)}
+                                    {item.orderId}
                                 </Text>
 
                             </TouchableOpacity>
@@ -125,10 +170,9 @@ const styles = StyleSheet.create({
     eachCrypto: {
         flex: 1,
         flexDirection: 'row',
-        justifyContent: "space-between",
     },
     flatListText: {
-        fontSize: 29,
+        fontSize: 20,
         padding: 5,
         fontWeight: "bold",
         color: '#f9e608',
@@ -144,6 +188,34 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         backgroundColor: 'rgb(32, 33, 36)',
     },
+    modalText: {
+        fontSize: 16,
+        marginBottom: 10,
+        textAlign: "center",
+        color: '#f9e608',
+      },
+      modalView: {
+        margin: 20,
+        backgroundColor: "rgb(32, 33, 36)",
+        borderRadius: 20,
+        borderColor: '#f9e608',
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+      },
+      centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22
+      },
 
 });
 
