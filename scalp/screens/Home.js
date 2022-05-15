@@ -105,7 +105,7 @@ class Home extends Component {
         >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>In order to iquidate you an order navigate to a wallet page and choose a currency</Text>
+            <Text style={styles.modalText}>In order to liquidate an order, navigate to a wallet page and choose the currency</Text>
             <TouchableOpacity onPress={() => this.props.navigation.navigate('wallet')}>
               <Text style={styles.modalText}>Navigate to the wallet</Text>
             </TouchableOpacity>
@@ -171,7 +171,6 @@ class Home extends Component {
     const coinOne = await AsyncStorage.getItem("@firstCoin");
     const coinTwo = await AsyncStorage.getItem("@secondCoin");
     const quantity = Math.round(parseFloat(this.state.amountToBid/this.state.currPrice));
-    console.log(quantity);
     const binanceClient = Binance({
       apiKey: await AsyncStorage.getItem("@api-key"),
       apiSecret: await AsyncStorage.getItem("@api-secret"),
@@ -186,7 +185,6 @@ class Home extends Component {
   }
   //API call for puttting limit buy order
   makeBuyOrder= async () =>{
-    console.log('makeAnOrder');
     const coinOne = await AsyncStorage.getItem("@firstCoin");
     const coinTwo = await AsyncStorage.getItem("@secondCoin");
     const quantity = Math.round(parseFloat(this.state.amountToBid/this.state.currPrice));

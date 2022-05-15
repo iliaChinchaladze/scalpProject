@@ -53,7 +53,6 @@ class Login extends Component {
     // if its not users first login navigets them to the gome page
     login = async () => {
       let users = JSON.parse(await AsyncStorage.getItem("@users"));
-      console.log(users);
       if(users != null) {
         var length = users.length;
       }
