@@ -14,6 +14,7 @@ class OpenOrders extends Component {
             confirmationCancel: false,
         };
     }
+    //display all the open orders
     componentDidMount() {
         this.unsubscribe = this.props.navigation.addListener('focus', () => {
             this.showOpenOrders();
@@ -57,6 +58,7 @@ class OpenOrders extends Component {
     }
 
     render() {
+        //devider for open orders
         const ItemDivider = () => {
             return (
                 <View
@@ -108,6 +110,7 @@ class OpenOrders extends Component {
             </View>
         );
     }
+    //API call. gets the data for the open orders and setState
     showOpenOrders = async () => {
         const binanceClient = Binance({
             apiKey: await AsyncStorage.getItem("@api-key"),
@@ -116,7 +119,6 @@ class OpenOrders extends Component {
         const firstCoin = await AsyncStorage.getItem("@coinOrders");
         const secondCoin = await AsyncStorage.getItem("@secondCoin");
         const data = await binanceClient.openOrders({ symbol: firstCoin + secondCoin })
-        console.log(data)
         this.setState({
             orders: data,
         })

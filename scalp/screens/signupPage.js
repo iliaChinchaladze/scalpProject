@@ -39,9 +39,9 @@ class Signup extends Component {
       } else if (this.state.email.includes('@') === false) {
         //throw new Error('Invalid Mail');
         Alert.alert('Invalid Mail');
-      } else if (this.state.password.length >= 6) {
-        //throw new Error('Password needs to be greater then 6 characters');
-        Alert.alert('Password needs to be greater then 6 characters');
+      } else if (this.state.password.length < 5) {
+        //throw new Error('Password needs to be greater than 6 characters');
+        Alert.alert('Password needs to be greater than 6 characters');
       }
       else{
           this.state.userData.first_name = this.state.first_name;
@@ -72,7 +72,7 @@ class Signup extends Component {
               firstLog : true,
             };
             users.push(tosend);
-            await AsyncStorage.setItem("@users", [JSON.stringify(users)]);
+            await AsyncStorage.setItem("@users", JSON.stringify(users));
             
           }
           this.props.navigation.goBack();

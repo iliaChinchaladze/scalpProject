@@ -17,12 +17,13 @@ class Coins extends Component {
             secondCrypto:'USDT',
         };
     }
+    //get observable currecies
     componentDidMount() {
         this.unsubscribe = this.props.navigation.addListener('focus', () => {
             this.getCurrencies();
         });
     }
-   
+    //load currencies
     getCurrencies = async () => {
         this.setState({
             cryptoCurrencies: [
@@ -39,9 +40,10 @@ class Coins extends Component {
             ]
         })
     };
-
+    //renders the display
     render() {
         return (
+            //text styling for the heading
             <View style={styles.container}>
                 <Text style={{
                     fontSize: 22,
@@ -103,7 +105,9 @@ class Coins extends Component {
                 </View>
                 <View style={{flex:1, alignItems: 'center', justifyContent: 'center',}}>
                     <TouchableOpacity style={styles.touchable}
-                        onPress={() => this.props.navigation.navigate('home')}>
+                        onPress={async () => {await AsyncStorage.setItem('@firstCoin', this.state.firstCrypto), 
+                                        await AsyncStorage.setItem('@secondCoin', this.state.secondCrypto),
+                                        this.props.navigation.navigate('home') }}>
                             <Text style={{fontWeight: "bold",justifyContent: 'center', alignSelf: 'center'}}>{this.state.firstCrypto}/{this.state.secondCrypto}</Text>
                     </TouchableOpacity>
                 </View>

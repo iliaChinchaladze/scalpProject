@@ -47,9 +47,13 @@ class Login extends Component {
         </View>
       );
     }
-    // login function goes here
+    // login function that checks if inputs are space
+    // checks if user email and password are present in database
+    // checks if its users first tie logging in, in this case user is navigated to settigns
+    // if its not users first login navigets them to the gome page
     login = async () => {
       let users = JSON.parse(await AsyncStorage.getItem("@users"));
+      console.log(users);
       if(users != null) {
         var length = users.length;
       }

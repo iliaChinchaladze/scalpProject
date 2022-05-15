@@ -5,10 +5,7 @@ import {
 
 
 import Binance from 'binance-api-react-native'
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
 
 
 class Home extends Component {
@@ -36,17 +33,28 @@ class Home extends Component {
     };
   }
   componentDidMount() {
+    //this functions are run every time page is visited
     this.unsubscribe = this.props.navigation.addListener('focus', () => {
+      //get currencies to observe
       this.getCurrencies();
+      //displays orderboock, current price and indicator. Runs on timer
       this.displayBook();
+      //clears indicator in order to avoid errors
+      this.restartIndicator();
     });
   }
+  //in order to prevent indicators from other values mixing up
+  restartIndicator(){
+    this.state.finalIndicator=0;
+  }
+  //load currencies that need to be displayed
   getCurrencies = async () => {
     this.setState({
       firstCrypto: await AsyncStorage.getItem('@firstCoin'),
       secondCrypto: await AsyncStorage.getItem('@secondCoin'),
     })
   }
+  //modal function to choose amount to bid
   modalFunction () {
     if(this.state.modalVisible){
       return(
@@ -87,6 +95,7 @@ class Home extends Component {
     } 
     return
   }
+  //modal function for liquidation 
   liquiditationFunction(){
     if(this.state.liquidationVisible){
       return(
@@ -96,18 +105,10 @@ class Home extends Component {
         >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Liquidate all positions or set custom stop-limit</Text>
-            <TouchableOpacity onPress={() => console.log('liquidate all')}>
-              <Text style={styles.modalText}>Liquidate all positions</Text>
+            <Text style={styles.modalText}>In order to iquidate you an order navigate to a wallet page and choose a currency</Text>
+            <TouchableOpacity onPress={() => this.props.navigation.navigate('wallet')}>
+              <Text style={styles.modalText}>Navigate to the wallet</Text>
             </TouchableOpacity>
-            <Text style={styles.modalText}>Set custom limit below</Text>
-            <TextInput
-                style={styles.modalInput}
-                placeholder="$"
-                keyboardType='numeric'
-                maxLength={6}
-                onChangeText={(text) => { this.setState({ amountToBid: text }); }}
-                />
             <TouchableOpacity onPress={() => this.setState({liquidationVisible:false})}>
               <Text style={styles.modalText}>Close</Text>
             </TouchableOpacity>
@@ -118,6 +119,8 @@ class Home extends Component {
     }
     return
   }
+  //modal for sell order confiramtion
+  //if amount to bid is 0 display different content
   confirmationSellFunction () {
     if(this.state.confiramtionSellVisible){
       if(this.state.amountToBid!=0){
@@ -162,6 +165,7 @@ class Home extends Component {
     } 
     return
   }
+  //API call for putting limit sell order
   makeSellOrder= async () =>{
     console.log('makeASellOrder');
     const coinOne = await AsyncStorage.getItem("@firstCoin");
@@ -180,6 +184,7 @@ class Home extends Component {
       price: this.state.currPrice,
     }));
   }
+  //API call for puttting limit buy order
   makeBuyOrder= async () =>{
     console.log('makeAnOrder');
     const coinOne = await AsyncStorage.getItem("@firstCoin");
@@ -198,6 +203,8 @@ class Home extends Component {
       price: this.state.currPrice,
     }));
   }
+  //modal for buy order confiramtion
+  //if amount to bid is 0 display different content
   confirmationBuyFunction () {
     if(this.state.confiramtionBuyVisible){
       if(this.state.amountToBid!=0){
@@ -243,7 +250,7 @@ class Home extends Component {
     return
   }
 
-
+//conditional style rendering for price and indicator
   render() {
     const testStyles = {
       popup: {
@@ -260,6 +267,8 @@ class Home extends Component {
         flex:1,
       },
     };
+    // item deviders for flatlist
+    // puts lines between orders red lines for sell orders and green lines for buy orders 
     const ItemDividerBuy = () => {
       return (
         <View
@@ -383,8 +392,11 @@ class Home extends Component {
       </View>
     );
   }
+  //function that compares price to previous price
+  //to determine if price increased or decrease, following that conditional styling is applied
   comparePrices = async () => {
     const prevPrice = await AsyncStorage.getItem("@prevCoin");
+    // on a first run previous price is null and price will show up as green
     if (prevPrice == null) {
       this.setState({
         priceUp: true
@@ -400,6 +412,7 @@ class Home extends Component {
         priceUp: true
       })
     }
+    //in case previous price equals current price keep price green
     else if (prevPrice == this.state.currPrice) {
       this.setState({
         priceUp: true
@@ -410,10 +423,9 @@ class Home extends Component {
       console.log(prevPrice, this.state.currPrice);
     }
   }
+  // function that adds indicators and also checks if indicator is positive or negative nad styles accordingly
   compareIndicator = async() =>{
-    console.log(this.state.finalIndicator,'--',this.state.indicatorValue);
     var finalValue = parseFloat(this.state.finalIndicator) + parseFloat(this.state.indicatorValue);
-    console.log(finalValue);
     this.setState({
       finalIndicator: (finalValue).toFixed(2),
     })
@@ -434,43 +446,38 @@ class Home extends Component {
     }
   }
   displayBook = async () => {
-    //const binanceClient = Binance();
+    //create a client for a library that supports API calls
     const binanceClient = Binance({
       apiKey: await AsyncStorage.getItem("@api-key"),
       apiSecret:await AsyncStorage.getItem("@api-secret"),
     })
-    //console.log(await binanceClient.myTrades({
-      //symbol: 'ETHUSDT',
-    //}))
-    //const binanceClient = new ccxt.binance({
-      //apiKey:'rXlac1IZ8KyegOHw8OvFBraaZQgaKPqYyw0lvBr5nI1RH42N809r2upYPseVaRa9',
-      //secret:'rd3TVSOnpy8Udopfv2fp2up6kYxB4Lp0XyrEUSZZ4HmnQhRlSoZQEdZ3qr9rIZFH'
-    //});
-    //const balance = await binanceClient.fetchBalance();
-    //console.log(balance);
+    //function that runs on timer and updates the data
     setInterval(async () => {
+      //load currecies that will be used in API calls
       const coinOne = await AsyncStorage.getItem("@firstCoin");
       const coinTwo = await AsyncStorage.getItem("@secondCoin");  
-      //const currPrice = await binanceClient.fetchTicker(coinOne + '/' + coinTwo);
-      
-      //new librabty testing
+      //get the current price of an asset that will be parsed later
       const info =(await binanceClient.prices());
+      //create a symbol to pass to an API call
       const symbolz = coinOne+coinTwo;
+      //parse the info to get the price in format that we need
       const currPrice = info[symbolz];
+      //get order book reading
       const orders = await binanceClient.book({ symbol: coinOne+coinTwo, limit: 15 });
-      //console.log(orders.asks);
-
       //creating variables to calculate total bids and asks
       let totalAsks =0;
       let totalBids =0;
       //go through asks and calculate voulme of sellers
       for(let obj of orders.asks){
+        //calculate total ask for each object by multiplying ask price by quantity
         totalAsks = totalAsks + (obj.price*obj.quantity);
       }
       //go through asks and calculate voulme of buyers
       for(let obj of orders.bids){
+        //calculate total ask for each object by multiplying buy price by quantity
         totalBids = totalBids + (obj.price*obj.quantity);
       }
+      //get the differance betweeen binds and asks
       const total = parseFloat(totalBids-totalAsks);
       //set order book data, current price and indicator that will be added to total.
       this.setState({
@@ -478,11 +485,14 @@ class Home extends Component {
         currPrice: parseFloat(currPrice).toFixed(2),
         indicatorValue : total.toFixed(2),
       })
+      //function that adds the price to total indicator
       this.compareIndicator();
+      //function that checks if indicator is positive or negative and style accordingly
       this.comparePrices();
       //set previous coin for price comparison
       await AsyncStorage.setItem("@prevCoin", parseFloat(currPrice).toFixed(2));
-    }, 5000);
+      //time in which function wil re-run
+    }, 10000);
   }
 }
 

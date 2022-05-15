@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import {
-  StyleSheet, Text, View, Button, TextInput, Image, TouchableOpacity, ImageBackground,
+  StyleSheet, Text, View, Button, TextInput, Image, TouchableOpacity, ImageBackground, Alert,
 } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Binance from 'binance-api-react-native';
 
 class Settings extends Component {
   constructor(props) {
@@ -58,7 +59,20 @@ class Settings extends Component {
   handleSubmit= async()=>{
     await AsyncStorage.setItem("@api-key", this.state.API_KEY)
     await AsyncStorage.setItem("@api-secret", this.state.API_SECRET);
-    this.props.navigation.navigate('Home');
+    //this.props.navigation.navigate('Home');
+    const binanceClient = Binance({
+      apiKey: await AsyncStorage.getItem("@api-key"),
+      apiSecret:await AsyncStorage.getItem("@api-secret"),
+    })
+    try{
+      const test = await binanceClient.accountInfo();
+      console.log(test);
+      this.props.navigation.navigate('Home');
+    }
+    catch(err){
+      console.log(err);
+      Alert.alert("Key or secret is not valid.")
+    }
   }
 
 }

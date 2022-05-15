@@ -14,14 +14,15 @@ class Wallet extends Component {
             balance:0,
         };
     }
+    //run this functions when page is visited
+    //calculate total balance
+    //get all the coins which currencies are more zero.
     componentDidMount() {
         this.unsubscribe = this.props.navigation.addListener('focus', () => {
             this.displayBalance();
             this.calculateBalance();
         });
     }
-    
-
     render() {
         const ItemDivider = () => {
             return (
@@ -63,6 +64,9 @@ class Wallet extends Component {
             </View>
         );
     }
+    //function that determines whether chosen item has open orders
+    //if orders are not present alert the user
+    //if there are open orders navigate user to the page where orders are diplayed
     showOpenOrders =async(item)=>{
         const binanceClient = Binance({
             apiKey: await AsyncStorage.getItem("@api-key"),
@@ -78,6 +82,9 @@ class Wallet extends Component {
             this.props.navigation.navigate("OpenOrders");
           }
     }
+    //calculate total balance
+    //go throug each currecy get their qurrent price in dollars
+    //then multiply by the quantity and add to the total balance
     calculateBalance = async () => {
         const binanceClient = Binance();
         const info =(await binanceClient.prices());
@@ -89,6 +96,7 @@ class Wallet extends Component {
                 const amountInDollars = currPrice*obj.free;
                 finalBalance += parseFloat(amountInDollars);
             }
+            //solo is unknown coin that can not be converted into USDT
             else if(obj.asset == 'SOLO'){
 
             }
@@ -100,7 +108,7 @@ class Wallet extends Component {
             balance: finalBalance.toFixed(2),
         })
     }
-
+    //get all the qurencies which quantity is greter then zero
     displayBalance = async () => {
         const binanceClient = Binance({
             apiKey: await AsyncStorage.getItem("@api-key"),
