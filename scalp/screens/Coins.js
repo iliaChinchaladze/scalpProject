@@ -32,6 +32,8 @@ class Coins extends Component {
                 { 'cryptoId': 'SAND' },
                 { 'cryptoId': 'BNB' },
                 { 'cryptoId': 'MATIC' },
+                {'cryptoId':'XRP'},
+                {'cryptoId':'ADA'}
             ],
             cryptoCurrencies2: [
                 { 'cryptoId': 'USDT' },

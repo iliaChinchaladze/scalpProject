@@ -48,8 +48,6 @@ class Signup extends Component {
           this.state.userData.last_name = this.state.last_name;
           this.state.userData.email = this.state.email;
           this.state.userData.password = this.state.password;
-
-          
           if (users == null){
             let tosend =[{
               id:0,

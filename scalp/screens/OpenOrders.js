@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-    StyleSheet, Text, View, Modal, TextInput, Image, TouchableOpacity, FlatList,
+    StyleSheet, Text, View, Modal, Button, Image, TouchableOpacity, FlatList,
 } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -72,6 +72,11 @@ class OpenOrders extends Component {
         }
         return (
             <View style={styles.container}>
+                <View style={{alignItems: 'center', justifyContent: 'center', }}>
+                    <TouchableOpacity style={styles.touchable} onPress={() => { this.props.navigation.goBack()}}>
+                        <Text style={{ fontWeight: "bold" }}>Go Back</Text>
+                    </TouchableOpacity>
+                </View>
                 <View style={{ width: '80%', flexDirection: 'row', justifyContent: 'space-evenly' }}>
                     <Text style={styles.flatListText}>Symbol</Text>
                     <Text style={styles.flatListText}>Type</Text>
@@ -86,8 +91,8 @@ class OpenOrders extends Component {
                             <TouchableOpacity
                                 onPress={async () => {
                                     await AsyncStorage.setItem('@cancelSymbol', item.symbol),
-                                    await AsyncStorage.setItem('@cancelId', JSON.stringify(item.orderId)),
-                                    this.setState({confirmationCancel: true})
+                                        await AsyncStorage.setItem('@cancelId', JSON.stringify(item.orderId)),
+                                        this.setState({ confirmationCancel: true })
                                 }}
                                 style={styles.eachCrypto}
                             >
@@ -118,7 +123,9 @@ class OpenOrders extends Component {
         })
         const firstCoin = await AsyncStorage.getItem("@coinOrders");
         const secondCoin = await AsyncStorage.getItem("@secondCoin");
-        const data = await binanceClient.openOrders({ symbol: firstCoin + secondCoin })
+        const symbolToSend = firstCoin + secondCoin;
+        console.log(symbolToSend);
+        const data = await binanceClient.openOrders({ symbol: symbolToSend.toString() })
         this.setState({
             orders: data,
         })
@@ -163,9 +170,8 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     touchable: {
-        padding: 30,
+        padding: 5,
         backgroundColor: '#f9e608',
-        margin: 10,
         textAlign: 'center',
         borderRadius: 5,
     },
@@ -195,8 +201,8 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         textAlign: "center",
         color: '#f9e608',
-      },
-      modalView: {
+    },
+    modalView: {
         margin: 20,
         backgroundColor: "rgb(32, 33, 36)",
         borderRadius: 20,
@@ -205,19 +211,19 @@ const styles = StyleSheet.create({
         alignItems: "center",
         shadowColor: "#000",
         shadowOffset: {
-          width: 0,
-          height: 2
+            width: 0,
+            height: 2
         },
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 5
-      },
-      centeredView: {
+    },
+    centeredView: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
         marginTop: 22
-      },
+    },
 
 });
 

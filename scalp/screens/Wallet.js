@@ -72,14 +72,16 @@ class Wallet extends Component {
             apiKey: await AsyncStorage.getItem("@api-key"),
             apiSecret:await AsyncStorage.getItem("@api-secret"),
           })
-          const firstCoin = await AsyncStorage.setItem("@coinOrders", item);
-          const secondCoin = await AsyncStorage.getItem("@secondCoin");
-          const order = await binanceClient.openOrders({symbol: item+secondCoin});
+          const symbolToPass = item+"USDT";
+          console.log(symbolToPass.toString());
+          const order = await binanceClient.openOrders({ symbol:symbolToPass.toString() });
+          console.log(order);
           if(order.length===0) {
               Alert.alert('No open orders found for this symbol');
           }
           else{
-            this.props.navigation.navigate("OpenOrders");
+              await AsyncStorage.setItem("@coinOrders", item);
+              this.props.navigation.navigate("OpenOrders");
           }
     }
     //calculate total balance

@@ -490,7 +490,7 @@ class Home extends Component {
       //set previous coin for price comparison
       await AsyncStorage.setItem("@prevCoin", parseFloat(currPrice).toFixed(2));
       //time in which function wil re-run
-    }, 10000);
+    }, 5000);
   }
 }
 
@@ -503,6 +503,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     backgroundColor: 'rgb(24, 26, 32)',
     height: '100%',
+    width:'100%',
     justifyContent:'space-between',
   },
   touchableContainer: {
