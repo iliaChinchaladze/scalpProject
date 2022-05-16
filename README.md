@@ -4,7 +4,7 @@
 This project was created using Visual Studio Code, to run this programm, download this repository, 
 and run npm install project can be tested on mobile phone or mobile emulator.
 
-Libraries used and enviromen used
+Libraries used and environment used
 
 ├── @babel/core@7.17.10
 ├── @react-native-async-storage/async-storage@1.15.17
